@@ -29,27 +29,36 @@
           </p>
         </article>
         <article class="main-feature">
-          <label for="input-currency" class="input-selector">
-            <span>INPUT</span>
-            <input type="text" class="input-selected" />
-          </label>
-
-          <label class="currency-selector">
-            <span>FROM</span>
-            <div class="option-selected"></div>
-          </label>
-
-          <div class="switch-currencies">
-            <ion-icon name="arrow-up-outline"></ion-icon>
-            <ion-icon name="arrow-down-outline"></ion-icon>
+          <div class="buttons">
+            <button class="btn-currency">Currency</button>
+            <button class="btn-chart">Chart</button>
           </div>
+          <section class="currencies">
+            <label for="input-currency" class="input-selector">
+              <span>INPUT</span>
+              <input type="text" class="input-selected" />
+            </label>
 
-          <label class="currency-selector">
-            <span>TO</span>
-            <div class="option-selected"></div>
-          </label>
+            <section class="currency-exchange">
+              <label class="currency-selector">
+                <span>FROM</span>
+                <div class="option-selected"></div>
+              </label>
+              <label class="currency-selector">
+                <span>TO</span>
+                <div class="option-selected"></div>
+              </label>
+              <div class="switch-currencies">
+                <span>Switch Currencies</span>
+                <div class="switch-icons">
+                  <ion-icon name="arrow-up-outline"></ion-icon>
+                  <ion-icon name="arrow-down-outline"></ion-icon>
+                </div>
+              </div>
+            </section>
 
-          <button class="change-currency">CONVERTIR</button>
+            <button class="change-currency">CONVERTIR</button>
+          </section>
         </article>
       </section>
     </main>

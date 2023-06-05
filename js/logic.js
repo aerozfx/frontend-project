@@ -17,7 +17,7 @@ export const sendCurrencies = async () => {
     toCurrency: options[1].innerHTML.slice(0, 3),
   };
 
-  await fetchCurrencies(obj);
+  await fetchCurrencies(obj).then((data) => showResults());
 };
 
 const fetchCurrencies = async (obj) => {
@@ -26,4 +26,21 @@ const fetchCurrencies = async (obj) => {
   )
     .then((res) => res.json())
     .then((data) => console.log(data));
+};
+
+const showResults = () => {
+  const section = document.createElement("section");
+  section.className = "currency-result";
+  const currencies = document.querySelector(".currencies");
+  const currencyExchange = `
+  <div>
+    <h3>1.50 From Moneda</h3>
+    <h2>1.50 To Moneda</h2>
+    <h5>1 From Moneda = 1 To Moneda</h5>
+    <h5>1 To Moneda = 1 From Moneda</h5>
+  </div>`;
+  section.innerHTML = currencyExchange;
+  const button = document.querySelector(".change-currency");
+  currencies.insertBefore(section, button);
+  document.querySelector(".change-currency").setAttribute("disabled", "");
 };

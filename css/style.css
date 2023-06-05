@@ -42,20 +42,47 @@ div {
 }
 
 .main-feature {
-  height: 80%;
+  min-height: 80%;
   width: 100%;
   background-color: aliceblue;
   border-radius: var(--border-radius);
-  padding: var(--padding);
+  border: 1px solid #ccc;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
 }
+.buttons {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 10%;
+}
 
-.currency-selector,
-.input-selector {
+.btn-currency,
+.btn-chart {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  height: 100%;
+  background-color: aliceblue;
+  pointer-events: all;
+}
+
+.btn-currency {
+  border-radius: 20px 0px 0px 0px;
+}
+.btn-chart {
+  border-radius: 0px 20px 0px 0px;
+}
+.currencies {
   min-width: 100%;
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  gap: 20px;
 }
 .input-selected {
   width: 100%;
@@ -63,14 +90,8 @@ div {
   padding: var(--padding);
   border: 1px solid #ccc;
 }
-
 .switch-currencies {
-  background-color: antiquewhite;
-  height: 70px;
-  width: 70px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  align-self: flex-end;
+  align-self: flex-start;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -79,6 +100,13 @@ div {
 
 .switch-currencies > * {
   pointer-events: none;
+}
+
+.currency-exchange {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex-grow: 1;
 }
 
 .select-main {
@@ -112,4 +140,9 @@ div {
   border: 1px solid #ccc;
   background-color: white;
   padding: var(--padding);
+}
+
+.currency-result {
+  width: 100%;
+  align-self: flex-start;
 }
