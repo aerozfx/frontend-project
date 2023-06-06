@@ -17,30 +17,57 @@ export const sendCurrencies = async () => {
     toCurrency: options[1].innerHTML.slice(0, 3),
   };
 
-  await fetchCurrencies(obj).then((data) => showResults());
+  await fetchCurrencies(obj).then((data) => showResults(data));
 };
 
 const fetchCurrencies = async (obj) => {
-  return fetch(
+  const res = await fetch(
     `http://data.fixer.io/api/latest?access_key=${API_KEY}&base=${obj.fromCurrency}&symbols=${obj.toCurrency}`
-  )
-    .then((res) => res.json())
-    .then((data) => console.log(data));
+  );
+  const data = await res.json();
+  return data;
 };
 
-const showResults = () => {
-  const section = document.createElement("section");
-  section.className = "currency-result";
+const showResults = (data) => {
+  const resultsSection = document.createElement("section");
+  resultsSection.className = "currency-result";
   const currencies = document.querySelector(".currencies");
-  const currencyExchange = `
-  <div>
-    <h3>1.50 From Moneda</h3>
-    <h2>1.50 To Moneda</h2>
-    <h5>1 From Moneda = 1 To Moneda</h5>
-    <h5>1 To Moneda = 1 From Moneda</h5>
-  </div>`;
-  section.innerHTML = currencyExchange;
   const button = document.querySelector(".change-currency");
-  currencies.insertBefore(section, button);
-  document.querySelector(".change-currency").setAttribute("disabled", "");
+  let codes = formatCurrencies();
+  const resultsHTML = `
+  <div>
+    <h3>${codes.userAmount} ${codes.firstCurrency} =</h3>
+    <h2>${codes.userAmount * data.rates[codes.secondCurrencyCode]} ${
+    codes.secondCurrency
+  }</h2>
+    <h5>1 ${codes.firstCurrency} = ${data.rates[codes.secondCurrencyCode]} ${
+    codes.secondCurrency
+  }</h5>
+    <h5>1 ${codes.secondCurrency} = ${(
+    1 / data.rates[codes.secondCurrencyCode]
+  ).toFixed(6)} ${codes.firstCurrency}</h5>
+  </div>`;
+  if (resultsSection.innerHTML === "") {
+    resultsSection.innerHTML = resultsHTML;
+    currencies.insertBefore(resultsSection, button);
+  }
+  button.innerHTML = "Mostrar casas de cambio";
 };
+
+const formatCurrencies = () => {
+  const userAmount = document.querySelector(".input-selected");
+  const currenciesSelected = document.querySelectorAll(".current-currency");
+  let currenciesArray = [];
+  for (let i = 0; i < currenciesSelected.length; i++) {
+    currenciesArray.push(currenciesSelected[i].innerHTML.split(" - "));
+  }
+  let obj = {
+    firstCurrencyCode: currenciesArray[0][0],
+    firstCurrency: currenciesArray[0][1],
+    secondCurrencyCode: currenciesArray[1][0],
+    secondCurrency: currenciesArray[1][1],
+    userAmount: userAmount.value,
+  };
+  return obj;
+};
+const createCurrencySection = () => {};

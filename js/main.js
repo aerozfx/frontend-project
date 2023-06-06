@@ -2,11 +2,6 @@ import { symbols } from "./symbols.js";
 import { switchCurrencies, sendCurrencies } from "./logic.js";
 const obj = Object.entries(symbols.symbols);
 
-// for (let [countryCode, localCurrency] of obj) {
-//   firstCurrencySelector.innerHTML += `<option value="${localCurrency}">${countryCode} - ${localCurrency}</option>`;
-//   secondCurrencySelector.innerHTML += `<option>${countryCode} - ${localCurrency}</option>`;
-// }
-
 const currencySelector = document.querySelectorAll(".currency-selector");
 const select = document.createElement("div");
 currencySelector.forEach((item) => {
@@ -23,16 +18,16 @@ currencySelector.forEach((item) => {
       li.forEach((ele) => {
         ele.addEventListener("click", (e) => {
           select.classList.toggle("select-main");
+          console.log(event.target.querySelector(".option-selected"));
           const code = e.target.innerText.slice(0, 2).toLowerCase();
-          event.target.innerHTML = `
-            <div class="option-selected">
+          event.target.querySelector(".option-selected").innerHTML = `
               <div class="option-info">
                 <span class="fi fi-${code}"></span>
                 <span>&nbsp;</span>
                 <span class="current-currency">${e.target.innerText}</span>
               </div>
               <ion-icon name="chevron-down-outline"></ion-icon>
-            </div>`;
+            `;
           document.querySelector("main").removeChild(select);
         });
       });
@@ -49,5 +44,8 @@ switchCurrenciesSelector.addEventListener("click", () => {
 const changeCurrency = document.querySelector(".change-currency");
 
 changeCurrency.addEventListener("click", () => {
-  sendCurrencies();
+  const currencies = document.querySelector(".currencies");
+  if (currencies.querySelector(".currency-result") == null) {
+    sendCurrencies();
+  }
 });
