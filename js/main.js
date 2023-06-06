@@ -48,4 +48,51 @@ changeCurrency.addEventListener("click", () => {
   if (currencies.querySelector(".currency-result") == null) {
     sendCurrencies();
   }
+
+  if (currencies.querySelector(".currency-result") != null) {
+    document.querySelector("#map").classList.toggle("hidden");
+  }
 });
+
+let map, service;
+const initMap = () => {
+  if (navigator.geolocation) {
+    const success = (position) => {
+      let { latitude: lat, longitude: long } = position.coords;
+      const userLocation = { lat: +lat.toFixed(3), lng: +long.toFixed(3) };
+      map = new google.maps.Map(document.querySelector("#map"), {
+        zoom: 16,
+        center: userLocation,
+      });
+
+      let reqObj = {
+        location: userLocation,
+        radius: "500",
+        type: ["bank"],
+      };
+
+      service = new google.maps.places.PlacesService(map);
+      service.nearbySearch(reqObj, (res, status) => {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          for (let i = 0; i < res.length; i++) {
+            createMarker(res[i]);
+          }
+          map.setCenter(res[0].geometry.location);
+        }
+      });
+    };
+
+    navigator.geolocation.getCurrentPosition(success);
+  }
+};
+
+const createMarker = (place) => {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+  });
+};
+
+window.initMap = initMap();

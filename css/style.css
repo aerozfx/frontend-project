@@ -16,9 +16,7 @@
 span {
   pointer-events: none;
 }
-div {
-  pointer-events: none;
-}
+
 .main-container {
   min-width: 100vw;
   background-color: aqua;
@@ -42,7 +40,7 @@ div {
 }
 
 .main-feature {
-  min-height: 80%;
+  height: 80%;
   width: 100%;
   background-color: aliceblue;
   border-radius: var(--border-radius);
@@ -145,4 +143,16 @@ div {
 .currency-result {
   width: 100%;
   align-self: flex-start;
+}
+
+#map {
+  pointer-events: all;
+  min-height: 100%;
+  width: 100%;
+}
+.gm-style {
+  padding: var(--padding);
+}
+.hidden {
+  display: none;
 }

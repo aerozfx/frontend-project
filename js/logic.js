@@ -37,15 +37,15 @@ const showResults = (data) => {
   const resultsHTML = `
   <div>
     <h3>${codes.userAmount} ${codes.firstCurrency} =</h3>
-    <h2>${codes.userAmount * data.rates[codes.secondCurrencyCode]} ${
-    codes.secondCurrency
-  }</h2>
-    <h5>1 ${codes.firstCurrency} = ${data.rates[codes.secondCurrencyCode]} ${
-    codes.secondCurrency
-  }</h5>
-    <h5>1 ${codes.secondCurrency} = ${(
+    <h2>${(codes.userAmount * data.rates[codes.secondCurrencyCode]).toFixed(
+      6
+    )} ${codes.secondCurrency}</h2>
+    <h5>1 ${codes.firstCurrencyCode} = ${data.rates[
+    codes.secondCurrencyCode
+  ].toFixed(6)} ${codes.secondCurrencyCode}</h5>
+    <h5>1 ${codes.secondCurrencyCode} = ${(
     1 / data.rates[codes.secondCurrencyCode]
-  ).toFixed(6)} ${codes.firstCurrency}</h5>
+  ).toFixed(6)} ${codes.firstCurrencyCode}</h5>
   </div>`;
   if (resultsSection.innerHTML === "") {
     resultsSection.innerHTML = resultsHTML;
@@ -70,4 +70,57 @@ const formatCurrencies = () => {
   };
   return obj;
 };
-const createCurrencySection = () => {};
+
+let map;
+let service;
+let infowindow;
+
+export const initMap = () => {
+  let mapContainer = document.createElement("div");
+  mapContainer.id = "map";
+  const mainSelector = document.querySelector(".main-feature");
+  mainSelector.appendChild(mapContainer);
+
+  if (navigator.geolocation) {
+    let success = (position) => {
+      let { latitude: lat, longitude: long } = position.coords;
+      const userLocation = { lat: +lat.toFixed(3), lng: +long.toFixed(3) };
+      map = new google.maps.Map(mapContainer, {
+        zoom: 16,
+        center: userLocation,
+      });
+
+      let reqObj = {
+        location: userLocation,
+        radius: "1000",
+        type: ["bank"],
+      };
+
+      service = new google.maps.places.PlacesService(map);
+      service.nearbySearch(reqObj, (res, status) => {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          for (let i = 0; i < res.length; i++) {
+            createMarker(res[i]);
+          }
+          map.setCenter(res[0].geometry.location);
+        }
+      });
+    };
+
+    navigator.geolocation.getCurrentPosition(success);
+  }
+};
+
+const createMarker = (place) => {
+  if (!place.geometry || !place.geometry.location) return;
+
+  const marker = new google.maps.Marker({
+    map,
+    position: place.geometry.location,
+  });
+
+  google.maps.event.addListener(marker, "click", () => {
+    infowindow.setContent(place.name || "");
+    infowindow.open(map);
+  });
+};
