@@ -23,12 +23,12 @@ Esta SPA consta de tres funcionalidades:
 
 ### Screenshots
 
-![](./assets/resources/screenshots/currency-view.png)
-![](./assets/resources/screenshots/currency-selected.png)
-![](./assets/resources/screenshots/currency-map.png)
-![](./assets/resources/screenshots/chart-view.png)
-![](./assets/resources/screenshots/chart-exchange-table.png)
-![](./assets/resources/screenshots/filter-currency.png)
+![](/assets/resources/screenshots/currency-view.png)
+![](/assets/resources/screenshots/currency-selected.png)
+![](/assets/resources/screenshots/currency-map.png)
+![](/assets/resources/screenshots/chart-view.png)
+![](/assets/resources/screenshots/chart-exchange-table.png)
+![](/assets/resources/screenshots/filter-currency.png)
 
 ### Links
 
