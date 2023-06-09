@@ -1,4 +1,5 @@
 import { API_KEY } from "./credentials.js";
+import { symbols } from "./symbols.js";
 
 export const switchCurrencies = () => {
   const options = document.querySelectorAll(".option-selected");
@@ -71,56 +72,148 @@ const formatCurrencies = () => {
   return obj;
 };
 
-let map;
-let service;
-let infowindow;
-
-export const initMap = () => {
-  let mapContainer = document.createElement("div");
-  mapContainer.id = "map";
-  const mainSelector = document.querySelector(".main-feature");
-  mainSelector.appendChild(mapContainer);
-
-  if (navigator.geolocation) {
-    let success = (position) => {
-      let { latitude: lat, longitude: long } = position.coords;
-      const userLocation = { lat: +lat.toFixed(3), lng: +long.toFixed(3) };
-      map = new google.maps.Map(mapContainer, {
-        zoom: 16,
-        center: userLocation,
-      });
-
-      let reqObj = {
-        location: userLocation,
-        radius: "1000",
-        type: ["bank"],
-      };
-
-      service = new google.maps.places.PlacesService(map);
-      service.nearbySearch(reqObj, (res, status) => {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-          for (let i = 0; i < res.length; i++) {
-            createMarker(res[i]);
-          }
-          map.setCenter(res[0].geometry.location);
-        }
-      });
-    };
-
-    navigator.geolocation.getCurrentPosition(success);
-  }
+export const filterCurrencies = (currency) => {
+  const currenciesArray = Object.values(symbols.symbols);
+  let reg = new RegExp(`.*(${currency}.*).*`, "gmi");
+  return currenciesArray.filter((ele) => reg.test(ele));
 };
 
-const createMarker = (place) => {
-  if (!place.geometry || !place.geometry.location) return;
-
-  const marker = new google.maps.Marker({
-    map,
-    position: place.geometry.location,
+export const getHistorialRates = async () => {
+  const currenciesSelected = document.querySelectorAll(".current-currency");
+  let obj = {
+    fromCurrency: currenciesSelected[0].innerText,
+    fromCurrencyCode: formatCode(currenciesSelected[0]),
+    toCurrency: currenciesSelected[1].innerText,
+    toCurrencyCode: formatCode(currenciesSelected[1]),
+  };
+  await fetchHistoricalRates(obj).then((data) => {
+    let { fromCurrency, fromCurrencyCode, toCurrency, toCurrencyCode, rates } =
+      data[data.length - 1];
+    createChart(data);
+    fillExchangeTable(
+      0,
+      { title: formatCurrency(fromCurrency), code: fromCurrencyCode },
+      {
+        title: formatCurrency(toCurrency),
+        code: toCurrencyCode,
+        rates: rates[toCurrencyCode],
+      }
+    );
+    fillExchangeTable(
+      1,
+      { title: formatCurrency(toCurrency), code: toCurrencyCode },
+      {
+        title: formatCurrency(fromCurrency),
+        code: fromCurrencyCode,
+        rates: 1 / rates[toCurrencyCode],
+      }
+    );
   });
+};
 
-  google.maps.event.addListener(marker, "click", () => {
-    infowindow.setContent(place.name || "");
-    infowindow.open(map);
+const fetchHistoricalRates = async (obj) => {
+  let date = formatDate();
+  let promises = date.map(async (ele) => {
+    return await fetch(
+      `https://data.fixer.io/api/${ele}?access_key=${API_KEY}&base=${obj.fromCurrencyCode}&symbols=${obj.toCurrencyCode}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        let { fromCurrency, fromCurrencyCode, toCurrency, toCurrencyCode } =
+          obj;
+        let { rates } = data;
+        let date = ele.split("-");
+        return {
+          fromCurrency,
+          fromCurrencyCode,
+          toCurrency,
+          toCurrencyCode,
+          rates,
+          date: `${date[1]}-${date[2]}`,
+        };
+      });
   });
+  return await Promise.all(promises).then((data) => data);
+};
+
+const formatDate = () => {
+  // let date = new Date();
+  // let year = date.getFullYear().toString();
+  // let month = (date.getMonth() + 1).toString();
+  // if (month.length === 1) month = `0${month}`;
+  // let day = date.getDate();
+  // if (day.length === 1) day = `0${day}`;
+  let date = "2023-06-08";
+  date = date.split("-");
+  let dateFormatted = [];
+  for (let i = date[2] - 1; i > date[2] - 8; i--) {
+    dateFormatted.push(`${date[0]}-${date[1]}-0${i}`);
+  }
+  return dateFormatted;
+};
+
+const createChart = (obj) => {
+  let dates = [];
+  let value = [];
+  for (let i = obj.length - 1; i >= 0; i--) {
+    value.push(obj[i].rates[obj[0].toCurrencyCode]);
+    dates.push(obj[i].date);
+  }
+  new Chart(chart, {
+    type: "line",
+    data: {
+      labels: [...dates],
+      datasets: [
+        {
+          label: `Value of ${obj[0].toCurrencyCode}`,
+          data: [...value],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          min: Math.min(...value),
+          max: Math.max(...value),
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+};
+
+const fillExchangeTable = (num, obj1, obj2) => {
+  const mainFeatureSelector = document.querySelector(".main-feature");
+  const table = mainFeatureSelector.querySelectorAll(".table-exchange");
+  table[num].innerHTML = `
+  <span class="table-title">${obj1.title} - ${obj2.title}</span>
+  <section class="table-content">
+    <span class="table-row">1 ${obj1.code} - ${(1 * obj2.rates).toFixed(4)} ${
+    obj2.code
+  }</span>
+    <span class="table-row">10 ${obj1.code} - ${(10 * obj2.rates).toFixed(4)} ${
+    obj2.code
+  }</span>
+    <span class="table-row">50 ${obj1.code} - ${(50 * obj2.rates).toFixed(4)} ${
+    obj2.code
+  }</span>
+    <span class="table-row">100 ${obj1.code} - ${(100 * obj2.rates).toFixed(
+    4
+  )} ${obj2.code}</span>
+    <span class="table-row">500 ${obj1.code} - ${(500 * obj2.rates).toFixed(
+    4
+  )} ${obj2.code}</span>
+  </section>
+  `;
+};
+
+const formatCode = (str) => {
+  return str.innerText.slice(0, 3);
+};
+
+const formatCurrency = (str) => {
+  return str.split(" - ")[1];
 };

@@ -10,16 +10,26 @@
       href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css"
     />
     <link rel="stylesheet" href="css/style.css" />
-    <title>Document</title>
+    <title>Conversor de divisas</title>
   </head>
   <body>
     <main>
-      <!-- <nav>
-        <ul>
-          <li>Conversor</li>
-          <li>Gráficas</li>
+      <nav class="navbar">
+        <section class="hamburguer">
+          <div id="1" class="menu"></div>
+          <div id="2" class="menu"></div>
+          <div id="3" class="menu"></div>
+        </section>
+        <ul class="list-items">
+          <div class="list">
+            <li>Sign In</li>
+            <li>Register</li>
+            <li class="separator"></li>
+            <li>Conversor</li>
+            <li>Gráficas</li>
+          </div>
         </ul>
-      </nav> -->
+      </nav>
       <section class="main-container">
         <article class="main-info">
           <h1 class="main-title">Conversor de divisas</h1>
@@ -30,15 +40,14 @@
         </article>
         <article class="main-feature">
           <div class="buttons">
-            <button class="btn-currency">Currency</button>
-            <button class="btn-chart">Chart</button>
+            <button class="btn-currency active">Currency</button>
+            <button class="btn-chart no-active">Chart</button>
           </div>
           <section class="currencies">
             <label for="input-currency" class="input-selector">
               <span>INPUT</span>
               <input type="text" class="input-selected" />
             </label>
-
             <section class="currency-exchange">
               <label class="currency-selector">
                 <span>FROM</span>
@@ -51,19 +60,21 @@
               <div class="switch-currencies">
                 <span>Switch Currencies</span>
                 <div class="switch-icons">
-                  <ion-icon name="arrow-up-outline"></ion-icon>
-                  <ion-icon name="arrow-down-outline"></ion-icon>
+                  <img src="./assets/images/exchange-arrows.png" alt="" />
                 </div>
               </div>
             </section>
 
             <button class="change-currency">CONVERTIR</button>
           </section>
-          <div id="map" class="hidden"></div>
+          <div class="map-container hidden">
+            <h2>Casas de cambio cerca de ti</h2>
+            <div id="map"></div>
+          </div>
         </article>
       </section>
     </main>
-
+    <script src="js/prompt.js"></script>
     <script
       type="module"
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
@@ -72,12 +83,8 @@
       nomodule
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAddsLvtCEbJilfCpdbH4oaThbTdlnMdpY&callback=initMap&libraries=places&v=weekly"
-      defer
-    ></script>
-    <script src="js/main.js" type="module"></script>
+    <script id="main-script" src="js/main.js" type="module"></script>
   </body>
 </html>
